@@ -22,9 +22,18 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
 
-  // 🔑 головна SSR-перевірка
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
   if (typeof document === "undefined") return null;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
